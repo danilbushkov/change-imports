@@ -1,4 +1,7 @@
 package test
-var test stringfunc test() {	
-	var test int
+
+import "fmt"
+
+func main() {
+	fmt.Println("test")
 }

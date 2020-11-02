@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -18,20 +19,21 @@ func main() {
 	//getFiles(".", &files)
 	//fmt.Println(files)
 	buffer := getTextFile("test.go")
-	err := os.Remove("test.go")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// err := os.Remove("test.go")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	file, err := os.Create("test.go")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
-	file.WriteString(buffer.String())
+	//file.WriteString(buffer.String())
 }
 
-func getTextFile(path string) *bytes.Buffer {
+func changeTextFile(path string) *bytes.Buffer {
+	var isImport bool
 	buffer := bytes.Buffer{}
 	file, err := os.Open(path)
 	if err != nil {
@@ -40,6 +42,9 @@ func getTextFile(path string) *bytes.Buffer {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
+		if !isImport && strings.Contains(scanner.Text(), "import") {
+			isImport = true
+		}
 		buffer.WriteString(scanner.Text() + "\n")
 	}
 
