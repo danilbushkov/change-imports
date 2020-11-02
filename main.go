@@ -18,22 +18,23 @@ func main() {
 	//fmt.Println(os.Args[1])
 	//getFiles(".", &files)
 	//fmt.Println(files)
-	buffer := getTextFile("test.go")
+	buffer := changeTextFile("test/t", "test", "new")
 	// err := os.Remove("test.go")
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
 
-	file, err := os.Create("test.go")
+	file, err := os.Create("test/t")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
-	//file.WriteString(buffer.String())
+	file.WriteString(buffer.String())
 }
 
-func changeTextFile(path string) *bytes.Buffer {
+func changeTextFile(path string, old string, new string) *bytes.Buffer {
 	var isImport bool
+	var text string
 	buffer := bytes.Buffer{}
 	file, err := os.Open(path)
 	if err != nil {
@@ -42,10 +43,25 @@ func changeTextFile(path string) *bytes.Buffer {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		if !isImport && strings.Contains(scanner.Text(), "import") {
+		text = scanner.Text() + "\n"
+
+		if !isImport && strings.Contains(text, "import") && strings.Contains(text, "(") {
 			isImport = true
+		} else if !isImport && strings.Contains(text, "import") {
+			if strings.Contains(text, old) {
+				text = strings.ReplaceAll(text, old, new)
+			}
 		}
-		buffer.WriteString(scanner.Text() + "\n")
+
+		if isImport && !strings.Contains(text, ")") {
+			if strings.Contains(text, old) {
+				text = strings.ReplaceAll(text, old, new)
+			}
+		} else {
+			isImport = false
+		}
+
+		buffer.WriteString(text)
 	}
 
 	if err := scanner.Err(); err != nil {
