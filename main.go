@@ -26,7 +26,7 @@ func main() {
 	old = os.Args[2]
 	new = os.Args[3]
 
-	file.GetFiles(path, &filePaths)
+	file.GetFilePaths(path, &filePaths)
 	for _, p := range filePaths {
 		buffer = file.ChangeTextFile(p, old, new)
 		if buffer != nil {
