@@ -30,6 +30,7 @@ func main() {
 	for _, p := range filePaths {
 		buffer = file.ChangeTextFile(p, old, new)
 		if buffer != nil {
+			fmt.Println(p)
 			f, err = os.Create(p)
 			if err != nil {
 				log.Fatal(err)
